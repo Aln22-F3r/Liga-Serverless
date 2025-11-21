@@ -24,6 +24,7 @@ Este proyecto fue desarrollado cumpliendo las siguientes reglas:
 - **Passlib[bcrypt]** – Encriptación segura de contraseñas.
 - **Pydantic** – Validación de datos.
 - **Python-Multipart** – Manejo de formularios y archivos.
+- **Mangum** - Ejecutar aplicaciones web en AWS Lambda.
 
 ---
 
