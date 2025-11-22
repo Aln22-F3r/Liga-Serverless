@@ -1,19 +1,23 @@
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.security import OAuth2PasswordRequestForm
-from app.users import service, models, schemas
+from fastapi import APIRouter, HTTPException
+from app.users.models import UserCreate
+from app.users.schemas import TokenResponse
+from app.users import service
 
 router = APIRouter()
 
-@router.post("/register", response_model=schemas.TokenResponse)
-def register(user_in: models.UserCreate):
+@router.post("/register", response_model=TokenResponse)
+def register(user: UserCreate):
     try:
-        return service.register_user(user_in)
+        return service.register_user(user)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@router.post("/login", response_model=schemas.TokenResponse)
-def login(form_data: OAuth2PasswordRequestForm = Depends()):
+class LoginData(UserCreate):
+    pass
+
+@router.post("/login", response_model=TokenResponse)
+def login(data: LoginData):
     try:
-        return service.login_user(form_data.username, form_data.password)
+        return service.login_user(data.email, data.password)
     except ValueError as e:
         raise HTTPException(status_code=401, detail=str(e))

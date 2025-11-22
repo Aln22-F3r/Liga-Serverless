@@ -1,74 +1,63 @@
-import os
 import uuid
-from datetime import datetime, timedelta
-from typing import Optional
-
 import boto3
-from jose import jwt
 from passlib.context import CryptContext
 from app.users.models import UserModel, UserCreate
+from app.users.auth import create_access_token
+from typing import Optional
+import os
 
-# Variables de entorno
-SECRET_KEY = os.getenv("SECRET_KEY", "SUPER_SECRET_KEY")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60))
-DYNAMO_TABLE_NAME = os.getenv("USERS_TABLE", "Users")
 AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
+DYNAMO_TABLE = os.getenv("USERS_TABLE", "Usuarios")
 
-# DynamoDB
-def get_users_table():
+pwd_context = CryptContext(
+    schemes=["bcrypt"],
+    deprecated="auto"
+)
+
+def get_table():
     dynamodb = boto3.resource("dynamodb", region_name=AWS_REGION)
-    return dynamodb.Table(DYNAMO_TABLE_NAME)
+    return dynamodb.Table(DYNAMO_TABLE)
 
-# JWT y hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
-
-def verify_password(plain: str, hashed: str) -> bool:
-    return pwd_context.verify(plain, hashed)
-
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
-    to_encode = data.copy()
-    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-
-# ---------------------
-# Funciones de usuario
-# ---------------------
 def get_user_by_email(email: str) -> Optional[dict]:
-    table = get_users_table()
+    table = get_table()
     resp = table.get_item(Key={"pk": f"USER#{email}", "sk": "PROFILE"})
     return resp.get("Item")
 
-def register_user(user_in: UserCreate):
-    table = get_users_table()
-    if get_user_by_email(user_in.email):
-        raise ValueError("Usuario ya existe")
+def register_user(data: UserCreate):
+    if get_user_by_email(data.email):
+        raise ValueError("El usuario ya existe")
 
     user_id = str(uuid.uuid4())
-    hashed_pw = hash_password(user_in.password)
+    hashed_pw = pwd_context.hash(data.password)
 
-    user_item = UserModel(
-        pk=f"USER#{user_in.email}",  # Cambié a email para consistencia con get_user_by_email
-        sk="PROFILE",
+    # Aquí estamos usando tu modelo COMPLETO
+    user = UserModel(
+        pk=f"USER#{data.email}",
         id=user_id,
-        username=user_in.username,
-        email=user_in.email,
+        username=data.username,
+        email=data.email,
         roles=["usuario"],
-        permissions=["ver"]
+        permissions=["ver"],
+        photoUrl=None,
+        teamId=None,
+        teamName=None,
+        leagueId=None,
+        leagueName=None
     )
 
-    table.put_item(Item={**user_item.dict(), "password": hashed_pw})
+    table = get_table()
+    table.put_item(Item={**user.dict(), "password": hashed_pw})
 
-    token = create_access_token({"sub": user_in.email})
+    token = create_access_token(data.email)
     return {"access_token": token, "token_type": "bearer"}
 
 def login_user(email: str, password: str):
     user = get_user_by_email(email)
-    if not user or not verify_password(password, user.get("password", "")):
-        raise ValueError("Credenciales incorrectas")
-    token = create_access_token({"sub": user["email"]})
+    if not user:
+        raise ValueError("Usuario no encontrado")
+
+    if not pwd_context.verify(password, user["password"]):
+        raise ValueError("Contraseña incorrecta")
+
+    token = create_access_token(email)
     return {"access_token": token, "token_type": "bearer"}
