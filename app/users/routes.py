@@ -5,10 +5,11 @@ from app.users import service
 
 router = APIRouter()
 
-@router.post("/register", response_model=TokenResponse)
+@router.post("/register")
 def register(user: UserCreate):
     try:
-        return service.register_user(user)
+        service.register_user(user)
+        return {"message": "Usuario registrado correctamente"}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 

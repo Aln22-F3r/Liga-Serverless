@@ -10,7 +10,7 @@ AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
 DYNAMO_TABLE = os.getenv("USERS_TABLE", "Usuarios")
 
 pwd_context = CryptContext(
-    schemes=["bcrypt"],
+    schemes=["sha256_crypt"],
     deprecated="auto"
 )
 
@@ -30,26 +30,17 @@ def register_user(data: UserCreate):
     user_id = str(uuid.uuid4())
     hashed_pw = pwd_context.hash(data.password)
 
-    # Aquí estamos usando tu modelo COMPLETO
     user = UserModel(
         pk=f"USER#{data.email}",
         id=user_id,
         username=data.username,
         email=data.email,
         roles=["usuario"],
-        permissions=["ver"],
-        photoUrl=None,
-        teamId=None,
-        teamName=None,
-        leagueId=None,
-        leagueName=None
+        permissions=["ver"]
     )
 
     table = get_table()
     table.put_item(Item={**user.dict(), "password": hashed_pw})
-
-    token = create_access_token(data.email)
-    return {"access_token": token, "token_type": "bearer"}
 
 def login_user(email: str, password: str):
     user = get_user_by_email(email)
