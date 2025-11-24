@@ -2,7 +2,7 @@
 
 ## Descripción
 
-**Liga Serverless** es una aplicación web desarrollada con **FastAPI**, que utiliza servicios de **AWS** de manera programática para implementar un entorno **serverless**.  
+**Liga Serverless** es una aplicación movíl desarrollada con **FastAPI**, que utiliza servicios de **AWS** de manera programática para implementar un entorno **serverless**.  
 El proyecto permite gestionar información de una liga deportiva, incluyendo usuarios, equipos y partidos, de manera escalable y segura, sin depender de infraestructura tradicional.
 
 Este proyecto fue desarrollado cumpliendo las siguientes reglas:
