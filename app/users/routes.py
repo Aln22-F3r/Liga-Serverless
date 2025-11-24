@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel, EmailStr
 from app.users.models import UserCreate
 from app.users.schemas import TokenResponse
 from app.users import service
@@ -13,8 +14,9 @@ def register(user: UserCreate):
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-class LoginData(UserCreate):
-    pass
+class LoginData(BaseModel):
+    email: EmailStr
+    password: str
 
 @router.post("/login", response_model=TokenResponse)
 def login(data: LoginData):

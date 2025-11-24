@@ -7,32 +7,36 @@ El proyecto permite gestionar información de una liga deportiva, incluyendo usu
 
 Este proyecto fue desarrollado cumpliendo las siguientes reglas:
 
-1. La infraestructura no se crea usando la consola web de AWS; todo se hace mediante scripts.
+1. La infraestructura no se crea usando la consola web de AWS, todo se hace mediante scripts.
 2. Se incluyen pruebas básicas de resiliencia.
-3. Es una aplicación web accesible desde navegador.
-4. Corresponde a un esfuerzo de aproximadamente un mes de trabajo.
+3. Es una aplicación móvil.
 
 ---
 
 ## Tecnologías Utilizadas
 
-- **Python 3.11+**
+- **Python 3.10**
 - **FastAPI** – Framework web moderno y rápido.
 - **Uvicorn** – Servidor ASGI para FastAPI.
 - **Boto3** – Interacción con servicios de AWS.
-- **Python-JOSE[bcrypt]** – Gestión de JWT y encriptación de contraseñas.
-- **Passlib[bcrypt]** – Encriptación segura de contraseñas.
+- **AWS Lambda** – Funciones serverless.
+- **API Gateway (HTTP API)** – Exposición de endpoints HTTP para Lambda.
+- **DynamoDB** – Base de datos NoSQL serverless.
+- **Python-JOSE** – Gestión de JWT.
+- **Passlib** – Encriptación segura de contraseñas.
 - **Pydantic** – Validación de datos.
 - **Python-Multipart** – Manejo de formularios y archivos.
-- **Mangum** - Ejecutar aplicaciones web en AWS Lambda.
+- **Mangum** – Ejecutar aplicaciones ASGI en AWS Lambda.
+- **Annotated-Types / Annotated-Doc / AnyIO / Sniffio / Starlette** – Utilidades y dependencias de FastAPI.
+- **DNSpython / ECDSA / RSA / Six / Typing-Extensions / Typing-Inspection / Email-Validator** – Librerías auxiliares de validación, seguridad y compatibilidad.
 
 ---
 
 ## Requisitos
 
-1. Python 3.11 o superior.
-2. Git instalado.
-3. VS Code recomendado (con extensión de Python).
+1. Python 3.10.
+2. Git instalado.  
+3. VS Code recomendado (con extensión de Python).  
 
 Instalar dependencias:
 
