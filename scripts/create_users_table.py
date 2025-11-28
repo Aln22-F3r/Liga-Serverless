@@ -1,8 +1,6 @@
 import boto3
 from botocore.exceptions import ClientError
 
-# Configuración #
-
 TABLE_NAME = "Usuarios"
 REGION = "us-east-1"
 
@@ -15,17 +13,34 @@ def create_users_table():
             AttributeDefinitions=[
                 {"AttributeName": "pk", "AttributeType": "S"},
                 {"AttributeName": "sk", "AttributeType": "S"},
+                {"AttributeName": "GSI1PK", "AttributeType": "S"},
+                {"AttributeName": "GSI1SK", "AttributeType": "S"},
             ],
             KeySchema=[
                 {"AttributeName": "pk", "KeyType": "HASH"},
                 {"AttributeName": "sk", "KeyType": "RANGE"},
             ],
-            BillingMode="PAY_PER_REQUEST"
+            GlobalSecondaryIndexes=[
+                {
+                    "IndexName": "GSI1",
+                    "KeySchema": [
+                        {"AttributeName": "GSI1PK", "KeyType": "HASH"},
+                        {"AttributeName": "GSI1SK", "KeyType": "RANGE"},
+                    ],
+                    "Projection": {
+                        "ProjectionType": "ALL"  # Incluye todos los atributos #
+                    }
+                }
+            ],
+            BillingMode="PAY_PER_REQUEST"  # On-demand #
         )
 
-        print("Creando tabla...")
+        print("Creando tabla con GSI...")
         dynamodb.get_waiter("table_exists").wait(TableName=TABLE_NAME)
-        print(f"Tabla '{TABLE_NAME}' creada correctamente.")
+        print(f"Tabla '{TABLE_NAME}' creada correctamente con GSI para email.")
+        print("\nEstructura de datos:")
+        print("  pk: USER#{user_id} <- Clave principal (más eficiente)")
+        print("  GSI1PK: EMAIL#{email} <- Para búsquedas por email")
 
     except ClientError as e:
         if e.response["Error"]["Code"] == "ResourceInUseException":
