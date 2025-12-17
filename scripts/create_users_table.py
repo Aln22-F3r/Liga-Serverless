@@ -1,7 +1,7 @@
 import boto3
 from botocore.exceptions import ClientError
 
-TABLE_NAME = "Usuarios"
+TABLE_NAME = "LigaDB"
 REGION = "us-east-1"
 
 dynamodb = boto3.client("dynamodb", region_name=REGION)

@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.users.routes import router as users_router
+from app.images.routes import router as images_router
 from mangum import Mangum
 
 app = FastAPI(title="Liga Serverless API")
@@ -16,6 +17,7 @@ app.add_middleware(
 
 # Rutas de usuarios #
 app.include_router(users_router, prefix="/users")
+app.include_router(images_router, prefix="/images")
 
 @app.get("/")
 def root():

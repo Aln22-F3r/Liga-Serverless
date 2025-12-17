@@ -61,7 +61,7 @@ def register_user(data: UserCreate):
         "password": hashed_pw,
         "photoUrl": None,
         "roles": ["usuario"],
-        "permissions": ["ver", "comentar"],
+        "permissions": ["ver"],
         "teamId": None,
         "teamName": None,
         "leagueId": None,

@@ -45,7 +45,7 @@ def refresh_token(data: RefreshTokenRequest):
 
 # Routes protegidas #
 
-@router.get("/me", response_model=UserResponse)
+@router.get("/profile", response_model=UserResponse)
 async def get_profile(current_user: dict = Depends(get_current_user)):
     user_id = current_user["user_id"]
     user = service.get_user_by_id(user_id)
@@ -57,7 +57,7 @@ async def get_profile(current_user: dict = Depends(get_current_user)):
     user_data = {k: v for k, v in user.items() if k != "password"}
     return user_data
 
-@router.put("/me", response_model=UserResponse)
+@router.put("/profile", response_model=UserResponse)
 async def update_profile(
     data: UpdateProfileData,
     current_user: dict = Depends(get_current_user)):

@@ -209,14 +209,6 @@ def main():
         print("Actualiza esta URL en tu app Flutter:")
         print(f"   api_service.dart → baseUrl = \"{api_url}\"")
         print()
-        print("Endpoints disponibles:")
-        print(f"   POST   {api_url}/users/register")
-        print(f"   POST   {api_url}/users/login")
-        print(f"   POST   {api_url}/users/refresh")
-        print(f"   GET    {api_url}/users/me  (requiere token)")
-        print(f"   PUT    {api_url}/users/me  (requiere token)")
-        print(f"   GET    {api_url}/users/ligas")
-        print()
 
     except Exception as e:
         print()
